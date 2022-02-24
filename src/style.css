@@ -1,0 +1,85 @@
+.navbar {
+    height: 100px;
+    width: 95%;
+    display: flex;
+    align-items: center;
+    border-color: black;
+    border-style: solid;
+    justify-content: center;
+    padding: 1rem;
+    border-radius: 10px;
+    border-width: 5px;
+    margin: auto;
+    margin-top: 20px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: large;
+    position: sticky;
+    background-color: azure;
+  }
+
+  .card:hover {
+      transform: scale(1.4);
+  }
+
+  .search-bar {
+    display: flex;
+    width: 50%;
+    margin: auto;
+    background-color: bisque;
+    transition-property: transform;
+    transition-timing-function: ease-in;
+    transition-duration: 500ms;
+    transition-delay: 0ms;
+    margin-top: 20px;
+
+  }
+
+  .search-bar:hover {
+      transform: scale(1.4);
+  }
+
+  .navbar-text{
+      font-family: 'Courier New', Courier, monospace;
+      font-size: x-large;
+      font-weight: bold;
+  }
+
+  .my-element {  
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3rem;
+    width: 95%;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    margin-top: 30px;
+  }
+
+  .box {
+    background-color: beige;
+    transition-property: transform;
+    transition-timing-function: ease-in;
+    transition-duration: 200ms;
+    transition-delay: 0ms;
+    height: auto;
+    border-color: black;
+    border-style: solid;
+    border-width: 3px;
+    border-radius: 10px;
+    padding: 10px;
+  }
+
+  .box:hover {
+    transform: scale(1.2);
+  }
+
+  .search-button {
+      align-self: flex-end;
+      background-color: blueviolet;
+  }
+
+  .flex{
+      display: flex;
+  }
+  
+  
