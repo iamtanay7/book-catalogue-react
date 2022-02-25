@@ -1,37 +1,61 @@
 import { useState, useEffect } from "react";
 
-const Book = (props) => {
-    const [book, setBook] = useState(null);
-    useEffect(()=>{
-        fetch(`http://127.0.0.1:8000/books/`)
-        .then(res => res.json())
-        .then(setBook)
-        .then(console.error)
-      }, [])
-
-      let i = 0;
-      for (const key in book) {
-          if (Object.hasOwnProperty.call(book, key)) {
-              book[key] = 
-              <div className="box" key={i}>
-                  {book[key].name}<br/>
-                  <hr/>
-                  {book[key].number_of_pages}<br/>
-                  {book[key].date_of_publishing}<br/>
-                  {book[key].average_critics_rating}<br/>
-                  {book[key].author}<br/>
-                </div>;
-                i++;             
-          }
-      }
-    // book = book.map(object => object.name);
-
+const Author = (props) => {
+    const [error, setError] = useState(null);
+      const [isLoaded, setIsLoaded] = useState(false);
+      const [items, setItems] = useState([]);
+      const [q,setQ] = useState("")
+      const [searchParam] = useState(["name"])
+    
+   useEffect(()=>{
+       fetch("http://127.0.0.1:8000/books/")
+       .then(res=>res.json())
+       .then(
+           (result) => {
+               setIsLoaded(true)
+               setItems(result)
+           },
+           (error) => {
+               setIsLoaded(true)
+               setError(error)
+           }
+       )
+   }, [])
+   if(error){
+    return <div>Error: {error.message}</div>;
+   }
+   else if(!isLoaded){
+       return <>Loading...</>
+   }
+   else{
     return (
         <>
-        <div className="my-element">
-            {book}
+        <div className="container">
+            <input type="text"
+            id={props.id}
+            placeholder="Search books by name...(Case insensitive)"
+            className="search-bar box"
+            value={q}
+            onChange={(e)=>setQ(e.target.value.toLowerCase())}
+            />
+        </div>
+        <div className="container">
+            {
+                items.filter((item)=>item.name.toLowerCase().includes(q)).map((item, index)=>(
+                    <div className="box mycard" key={index}>
+                        {item.name}<br/>
+                        {item.number_of_pages}<br/>
+                        {item.date_of_publishing}<br/>
+                        {item.average_critics_rating}<br/>
+                    </div>
+                ))
+            }
         </div>
         </>
     )
+   }
+
+    
 }
-export default Book;
+
+export default Author;

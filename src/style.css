@@ -17,25 +17,23 @@
     background-color: azure;
   }
 
-  .card:hover {
-      transform: scale(1.4);
-  }
-
   .search-bar {
-    display: flex;
-    width: 50%;
-    margin: auto;
-    background-color: bisque;
     transition-property: transform;
     transition-timing-function: ease-in;
-    transition-duration: 500ms;
+    transition-duration: 200ms;
     transition-delay: 0ms;
-    margin-top: 20px;
+    margin-top: 30px;
+    width: 100%;
+    border-radius: 10px;
 
   }
 
-  .search-bar:hover {
-      transform: scale(1.4);
+  .container {
+    display: flex;
+    margin: auto;
+    width: 100%;
+    border-radius: 20px;
+    column-gap: 30px;
   }
 
   .navbar-text{
@@ -46,7 +44,7 @@
 
   .my-element {  
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 3rem;
     width: 95%;
     align-items: center;
@@ -55,7 +53,7 @@
     margin-top: 30px;
   }
 
-  .box {
+  .box.mycard {
     background-color: beige;
     transition-property: transform;
     transition-timing-function: ease-in;
@@ -69,13 +67,23 @@
     padding: 10px;
   }
 
-  .box:hover {
+  .mycard:hover {
     transform: scale(1.2);
+    background-color: cadetblue;
+    color: white;
+    border-radius: 30px;
+    font-weight: bold;
   }
 
   .search-button {
-      align-self: flex-end;
-      background-color: blueviolet;
+      background-color: bisque;
+      display: flex;
+      margin: auto;
+      margin-top: 20px;
+      height: 30px;
+      border-radius: 20px;
+      width: fit-content;
+      text-justify: auto;
   }
 
   .flex{
