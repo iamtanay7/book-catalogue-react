@@ -45,12 +45,13 @@
   .my-element {  
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 3rem;
-    width: 95%;
+    gap: 4rem;
+    width: 85%;
     align-items: center;
     justify-content: center;
     margin: auto;
     margin-top: 30px;
+    
   }
 
   .box.mycard {

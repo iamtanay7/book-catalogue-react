@@ -4,7 +4,7 @@ import MyNavbar from './components/MyNavbar'
 import './style.css'
 import { useState } from 'react'
 import Switch from '@mui/material/Switch';
-import { BottomNavigation } from '@mui/material'
+import { BottomNavigation, AppBar, Toolbar, Typography } from '@mui/material'
 
 const App = () => {
     const [currentState, setCurrentState] = useState(false);
@@ -16,11 +16,18 @@ const App = () => {
     return (
         <div>
             <div id="hello"><p>Hello!</p></div>
-            <MyNavbar/>
-            <div className='container flex' style={{marginTop:"80px"}}>
-                Currently showing: {currentState?"Books":"Authors"}
-                <Switch onChange={changeState}>Toggle</Switch>
-            </div>
+            <AppBar>
+          <Toolbar>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            The Gene Box
+          </Typography>
+              <Typography textAlign="right">
+              Currently showing: {currentState?"Books":"Authors"}
+              </Typography> 
+                <Switch onChange={changeState} color="secondary"></Switch>
+          </Toolbar>
+        </AppBar>
+           
             <AppState currentState={currentState}/>
             <BottomNavigation/>
         </div>

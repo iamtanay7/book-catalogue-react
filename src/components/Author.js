@@ -1,11 +1,12 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import TextField from '@mui/material/TextField';
-import { Skeleton, Button, Modal, Typography, Box, InputLabel, MenuItem, Select, FormControl, CircularProgress, Card, CardActionArea, CardMedia, CardContent } from "@mui/material";
-import axios from "axios";
+import { IconButton, Skeleton, Button, Modal, Typography, Box, InputLabel, MenuItem, Select, FormControl, CircularProgress, Card, CardActionArea, CardMedia, CardContent } from "@mui/material";
+import Snackbar from "@mui/material/Snackbar";
+import CloseIcon from '@material-ui/icons/Close';
+import axios from 'axios'
 
 
 const Author = (props) => {
-    const { loading, setLoading } = useState(true)
     const [error, setError] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
     const [items, setItems] = useState([]);
@@ -13,6 +14,7 @@ const Author = (props) => {
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
+    const [snack, setSnack] = useState(false)
     const style = {
         position: 'absolute',
         top: '50%',
@@ -29,8 +31,34 @@ const Author = (props) => {
     };
 
     const handleSearchChange = (event) => {
+        event.preventDefault()
         setQ(event.target.value.toLowerCase())
     }
+
+    const exportToCsv = () => {
+        setSnack(true)
+        window.location.href = "http://127.0.0.1:8000/exportauthorsascsv"
+
+    }
+    const handleSnackClose = (event, reason) => {
+        if (reason === "clickaway") {
+            return;
+        }
+        setSnack(false)
+    }
+    const action = (
+        <React.Fragment>
+            <IconButton
+                size="small"
+                aria-label="close"
+                color="inherit"
+                onClick={handleSnackClose}
+            >
+                <CloseIcon fontSize="small" />
+            </IconButton>
+        </React.Fragment>
+    )
+
 
     const addNewAuthor = () => {
         let obj = {}
@@ -62,7 +90,7 @@ const Author = (props) => {
                     setError(error)
                 }
             )
-            
+
     }, [])
     if (error) {
         return <div>Error: {error.message}</div>;
@@ -77,7 +105,7 @@ const Author = (props) => {
     else {
         return (
             <>
-                <div className="container">
+                <div className="container" style={{ marginTop: "80px" }}>
 
                     <TextField variant="outlined"
                         label="Search"
@@ -133,10 +161,10 @@ const Author = (props) => {
                                     <MenuItem value="Others">Others </MenuItem>
                                 </Select>
                             </FormControl>
-                           
+
 
                             <FormControl fullWidth style={{ marginTop: '20px' }}>
-                                <TextField variant="outlined" label="Image URL" id="image_url"/>
+                                <TextField variant="outlined" label="Image URL" id="image_url" />
                             </FormControl>
 
                             <FormControl fullWidth>
@@ -148,53 +176,54 @@ const Author = (props) => {
                             </FormControl>
                         </Box>
                     </Modal>
-                    <Button variant="contained" onClick={handleOpen}>Export to CSV</Button>
+                    <Button
+                        variant="contained"
+                        onClick={exportToCsv}>
+                        Export to CSV</Button>
+                    <Snackbar
+                        open={snack}
+                        autoHideDuration={4000}
+                        message="Exported data to CSV!"
+                        action={action}
+                        onClose={handleSnackClose}
+                    />
                 </div>
 
 
                 <div className="my-element">
                     {
                         items.filter((item) => item.name.toLowerCase().includes(q))
-                        .sort(
-                            function(a, b){
-                                let x = a.name.toLowerCase();
-                                let y = b.name.toLowerCase();
-                                if (x < y) {return -1;}
-                                if (x > y) {return 1;}
-                                return 0;
-                              }
-                        )
-                        .map((item, index) => (
-                            // <div className="box mycard" key={index}>
-                            //     {item.name}<br />
-                            //     {item.age}<br />
-                            //     {item.gender}<br />
-                            // </div>
-                            <Card key={index} class="cards">
-                                <CardActionArea>
-                                    {
-                                        loading?
-                                        <Skeleton sx={{ height: 190 }} animation="wave" variant="rectangular" />:
-                                    
-                                    <CardMedia
-                                        component="img"
-                                        height="250"
-                                        image={item.image_url}
-                                        alt="green iguana"
-                                    />
-                                        }
-                                    <CardContent>
-                                        <Typography gutterBottom component="div">
-                                            {item.name}<br />
-                                        </Typography>
-                                        <Typography variant="body2" color="text.secondary">
-                                            {item.age}<br />
-                                            {item.gender}<br />
-                                        </Typography>
-                                    </CardContent>
-                                </CardActionArea>
-                            </Card>
-                        ))
+                            .sort(
+                                function (a, b) {
+                                    let x = a.name.toLowerCase();
+                                    let y = b.name.toLowerCase();
+                                    if (x < y) { return -1; }
+                                    if (x > y) { return 1; }
+                                    return 0;
+                                }
+                            )
+                            .map((item, index) => (
+                                <Card key={index}>
+                                    <CardActionArea>
+                                        <CardMedia
+                                            component="img"
+                                            height="250"
+                                            image={item.image_url}
+                                            alt="Image not available"
+                                        />
+
+                                        <CardContent>
+                                            <Typography gutterBottom component="div">
+                                                {item.name}<br />
+                                            </Typography>
+                                            <Typography variant="body2" color="text.secondary">
+                                                {item.country}<br />
+                                                {item.gender}, {item.age}<br />
+                                            </Typography>
+                                        </CardContent>
+                                    </CardActionArea>
+                                </Card>
+                            ))
                         || "No results found"}
                 </div>
             </>

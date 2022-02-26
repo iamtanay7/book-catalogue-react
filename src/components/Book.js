@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const Author = (props) => {
+const Book = (props) => {
     const [error, setError] = useState(null);
       const [isLoaded, setIsLoaded] = useState(false);
       const [items, setItems] = useState([]);
@@ -39,7 +39,7 @@ const Author = (props) => {
             onChange={(e)=>setQ(e.target.value.toLowerCase())}
             />
         </div>
-        <div className="container">
+        <div className="my-element">
             {
                 items.filter((item)=>item.name.toLowerCase().includes(q)).map((item, index)=>(
                     <div className="box mycard" key={index}>
@@ -58,4 +58,4 @@ const Author = (props) => {
     
 }
 
-export default Author;
+export default Book;
