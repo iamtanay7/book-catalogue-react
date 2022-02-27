@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import TextField from '@mui/material/TextField';
-import { IconButton, Skeleton, Button, Modal, Typography, Box, InputLabel, MenuItem, Select, FormControl, CircularProgress, Card, CardActionArea, CardMedia, CardContent, Rating } from "@mui/material";
+import { IconButton, Button, Modal, Typography, Box, InputLabel, MenuItem, Select, FormControl, CircularProgress, Card, CardActionArea, CardMedia, CardContent, Rating } from "@mui/material";
 import Snackbar from "@mui/material/Snackbar";
 import CloseIcon from '@material-ui/icons/Close';
 import axios from 'axios'
+import setCurrentState from '../App'
 
 
 const Book = (props) => {
@@ -27,10 +28,48 @@ const Book = (props) => {
     };
     const [authorId, setAuthorId] = useState(1);
     const [allAuthors, setAllAuthors] = useState([]);
+    const [snackAuthor, setSnackAuthor] = useState(false)
+    const [snackError, setSnackError] = useState(false)
     const handleChange = (event) => {
         setAuthorId(event.target.value)
     };
+    const handleAuthorSnackClose = (event, reason) => {
+        if (reason === "clickaway") {
+            return;
+        }
+        setSnackAuthor(false)
+    }
+    const handleErrorSnackClose = (event, reason) => {
+        if (reason === "clickaway") {
+            return;
+        }
+        setSnackError(false)
+    }
+    const actionAuthor = (
+        <React.Fragment>
+            <IconButton
+                size="small"
+                aria-label="close"
+                color="inherit"
+                onClick={handleAuthorSnackClose}
+            >
+                <CloseIcon fontSize="small" />
+            </IconButton>
+        </React.Fragment>
+    )
 
+    const actionError = (
+        <React.Fragment>
+            <IconButton
+                size="small"
+                aria-label="close"
+                color="inherit"
+                onClick={handleErrorSnackClose}
+            >
+                <CloseIcon fontSize="small" />
+            </IconButton>
+        </React.Fragment>
+    )
     const handleSearchChange = (event) => {
         event.preventDefault()
         setQ(event.target.value.toLowerCase())
@@ -38,7 +77,7 @@ const Book = (props) => {
 
     const exportToCsv = () => {
         setSnack(true)
-        window.location.href = "https://tanay-books.herokuapp.com/exportbooksascsv"
+        window.location.href = "http://127.0.0.1:8000/exportbooksascsv"
 
     }
     const handleSnackClose = (event, reason) => {
@@ -71,17 +110,25 @@ const Book = (props) => {
         obj.image_url = document.querySelector("#image_url").value || "url"
         
         console.log(obj)
-        axios.post("https://tanay-books.herokuapp.com/addnewbook/", obj)
+        axios.post("http://127.0.0.1:8000/addnewbook/", obj)
             .then(function (response) {
-                console.log(response);
+                if(response.data.error==="Invalid input"){
+                    setSnackError(true)
+                }
+                else{
+                    setSnackAuthor(true)
+                    handleClose()
+                    window.location.reload()
+                }
             })
             .catch(function (error) {
                 console.log(error);
+                setSnackError(true)
             });
     }
 
     useEffect(() => {
-        fetch("https://tanay-books.herokuapp.com/books/")
+        fetch("http://127.0.0.1:8000/books/")
             .then(res => res.json())
             .then(
                 (result) => {
@@ -93,7 +140,7 @@ const Book = (props) => {
                     setError(error)
                 }
             )
-            fetch("https://tanay-books.herokuapp.com/allauthors/")
+            fetch("http://127.0.0.1:8000/allauthors/")
             .then( res=> res.json())
             .then(
                 (result) => {
@@ -109,7 +156,7 @@ const Book = (props) => {
     }
     else if (!isLoaded) {
         return (
-            <Box sx={{ display: 'flex', margin: 'auto' }}>
+            <Box sx={{ display: 'flex', marginTop:'300px' }}>
                 <CircularProgress />
             </Box>
         )
@@ -209,6 +256,20 @@ const Book = (props) => {
                         action={action}
                         onClose={handleSnackClose}
                     />
+                    <Snackbar
+                        open={snackAuthor}
+                        autoHideDuration={4000}
+                        message="Book added successfully!"
+                        action={actionAuthor}
+                        onClose={handleAuthorSnackClose}
+                    />
+                    <Snackbar
+                        open={snackError}
+                        autoHideDuration={4000}
+                        message="Please enter valid data!"
+                        action={actionError}
+                        onClose={handleErrorSnackClose}
+                    />
                 </div>
 
 
@@ -239,9 +300,9 @@ const Book = (props) => {
                                                 {item.name}<br />
                                             </Typography>
                                             <Typography variant="body2" color="text.secondary">
-                                                {item.number_of_pages}<br />
-                                                {item.date_of_publishing}<br />
-                                                {item.author_name}<br />
+                                                {item.number_of_pages} pages<br />
+                                                Published on {item.date_of_publishing}<br />
+                                                Written by {item.author_name}<br />
                                                 <Typography component="legend">
                                                 <Rating name="read-only" precision={0.5} value={item.average_critics_rating/2} readOnly></Rating>
                                                 </Typography>

@@ -1,6 +1,5 @@
 import Book from './components/Book'
 import Author from './components/Author'
-import MyNavbar from './components/MyNavbar'
 import './style.css'
 import { useState } from 'react'
 import Switch from '@mui/material/Switch';

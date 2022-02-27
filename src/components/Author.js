@@ -15,6 +15,8 @@ const Author = (props) => {
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
     const [snack, setSnack] = useState(false)
+    const [snackAuthor, setSnackAuthor] = useState(false)
+    const [snackError, setSnackError] = useState(false)
     const style = {
         position: 'absolute',
         top: '50%',
@@ -37,7 +39,7 @@ const Author = (props) => {
 
     const exportToCsv = () => {
         setSnack(true)
-        window.location.href = "https://tanay-books.herokuapp.com/exportauthorsascsv"
+        window.location.href = "http://127.0.0.1:8000/exportauthorsascsv"
 
     }
     const handleSnackClose = (event, reason) => {
@@ -46,6 +48,18 @@ const Author = (props) => {
         }
         setSnack(false)
     }
+    const handleAuthorSnackClose = (event, reason) => {
+        if (reason === "clickaway") {
+            return;
+        }
+        setSnackAuthor(false)
+    }
+    const handleErrorSnackClose = (event, reason) => {
+        if (reason === "clickaway") {
+            return;
+        }
+        setSnackError(false)
+    }
     const action = (
         <React.Fragment>
             <IconButton
@@ -53,6 +67,32 @@ const Author = (props) => {
                 aria-label="close"
                 color="inherit"
                 onClick={handleSnackClose}
+            >
+                <CloseIcon fontSize="small" />
+            </IconButton>
+        </React.Fragment>
+    )
+
+    const actionAuthor = (
+        <React.Fragment>
+            <IconButton
+                size="small"
+                aria-label="close"
+                color="inherit"
+                onClick={handleAuthorSnackClose}
+            >
+                <CloseIcon fontSize="small" />
+            </IconButton>
+        </React.Fragment>
+    )
+
+    const actionError = (
+        <React.Fragment>
+            <IconButton
+                size="small"
+                aria-label="close"
+                color="inherit"
+                onClick={handleErrorSnackClose}
             >
                 <CloseIcon fontSize="small" />
             </IconButton>
@@ -68,17 +108,21 @@ const Author = (props) => {
         obj.country = document.querySelector("#country").value
         obj.image_url = document.querySelector("#image_url").value || "url"
         console.log(obj)
-        axios.post("https://tanay-books.herokuapp.com/authors/", obj)
+        axios.post("http://127.0.0.1:8000/addnewauthor/", obj)
             .then(function (response) {
                 console.log(response);
+                setSnackAuthor(true)
+                handleClose()
+                window.location.reload()
             })
             .catch(function (error) {
                 console.log(error);
+                setSnackError(true)
+
             });
     }
-
     useEffect(() => {
-        fetch("https://tanay-books.herokuapp.com/authors/")
+        fetch("http://127.0.0.1:8000/authors/")
             .then(res => res.json())
             .then(
                 (result) => {
@@ -97,7 +141,7 @@ const Author = (props) => {
     }
     else if (!isLoaded) {
         return (
-            <Box sx={{ display: 'flex', margin: 'auto' }}>
+            <Box sx={{ display: 'flex', marginTop:'300px' }}>
                 <CircularProgress />
             </Box>
         )
@@ -130,7 +174,7 @@ const Author = (props) => {
                             </Typography>
 
                             <FormControl fullWidth style={{ marginTop: '20px' }}>
-                                <TextField error variant="outlined" label="Name of author" id="author-name" required />
+                                <TextField variant="outlined" label="Name of author" id="author-name" required />
                             </FormControl>
 
                             <FormControl fullWidth style={{ marginTop: '20px' }}>
@@ -186,6 +230,20 @@ const Author = (props) => {
                         message="Exported data to CSV!"
                         action={action}
                         onClose={handleSnackClose}
+                    />
+                    <Snackbar
+                        open={snackAuthor}
+                        autoHideDuration={4000}
+                        message="Author added successfully!"
+                        action={actionAuthor}
+                        onClose={handleAuthorSnackClose}
+                    />
+                    <Snackbar
+                        open={snackError}
+                        autoHideDuration={4000}
+                        message="Please enter valid data!"
+                        action={actionError}
+                        onClose={handleErrorSnackClose}
                     />
                 </div>
 
