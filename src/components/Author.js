@@ -110,10 +110,14 @@ const Author = (props) => {
         console.log(obj)
         axios.post("https://tanay-books.herokuapp.com/addnewauthor/", obj)
             .then(function (response) {
-                console.log(response);
-                setSnackAuthor(true)
-                handleClose()
-                window.location.reload()
+              if(response.data.error==="Invalid input"){
+                    setSnackError(true)
+                }
+                else{
+                    setSnackAuthor(true)
+                    handleClose()
+                    window.location.reload()
+                }
             })
             .catch(function (error) {
                 console.log(error);
