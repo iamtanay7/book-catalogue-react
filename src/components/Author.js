@@ -37,7 +37,7 @@ const Author = (props) => {
 
     const exportToCsv = () => {
         setSnack(true)
-        window.location.href = "http://127.0.0.1:8000/exportauthorsascsv"
+        window.location.href = "https://tanay-books.herokuapp.com/exportauthorsascsv"
 
     }
     const handleSnackClose = (event, reason) => {
@@ -68,7 +68,7 @@ const Author = (props) => {
         obj.country = document.querySelector("#country").value
         obj.image_url = document.querySelector("#image_url").value || "url"
         console.log(obj)
-        axios.post("http://127.0.0.1:8000/authors/", obj)
+        axios.post("https://tanay-books.herokuapp.com/authors/", obj)
             .then(function (response) {
                 console.log(response);
             })
@@ -78,7 +78,7 @@ const Author = (props) => {
     }
 
     useEffect(() => {
-        fetch("http://127.0.0.1:8000/authors/")
+        fetch("https://tanay-books.herokuapp.com/authors/")
             .then(res => res.json())
             .then(
                 (result) => {

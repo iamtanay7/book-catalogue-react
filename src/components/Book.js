@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import TextField from '@mui/material/TextField';
-import { IconButton, Skeleton, Button, Modal, Typography, Box, InputLabel, MenuItem, Select, FormControl, CircularProgress, Card, CardActionArea, CardMedia, CardContent } from "@mui/material";
+import { IconButton, Skeleton, Button, Modal, Typography, Box, InputLabel, MenuItem, Select, FormControl, CircularProgress, Card, CardActionArea, CardMedia, CardContent, Rating } from "@mui/material";
 import Snackbar from "@mui/material/Snackbar";
 import CloseIcon from '@material-ui/icons/Close';
 import axios from 'axios'
@@ -38,7 +38,7 @@ const Book = (props) => {
 
     const exportToCsv = () => {
         setSnack(true)
-        window.location.href = "http://127.0.0.1:8000/exportauthorsascsv"
+        window.location.href = "https://tanay-books.herokuapp.com/exportbooksascsv"
 
     }
     const handleSnackClose = (event, reason) => {
@@ -71,7 +71,7 @@ const Book = (props) => {
         obj.image_url = document.querySelector("#image_url").value || "url"
         
         console.log(obj)
-        axios.post("http://127.0.0.1:8000/addnewbook/", obj)
+        axios.post("https://tanay-books.herokuapp.com/addnewbook/", obj)
             .then(function (response) {
                 console.log(response);
             })
@@ -81,7 +81,7 @@ const Book = (props) => {
     }
 
     useEffect(() => {
-        fetch("http://127.0.0.1:8000/books/")
+        fetch("https://tanay-books.herokuapp.com/books/")
             .then(res => res.json())
             .then(
                 (result) => {
@@ -93,7 +93,7 @@ const Book = (props) => {
                     setError(error)
                 }
             )
-            fetch("http://127.0.0.1:8000/allauthors/")
+            fetch("https://tanay-books.herokuapp.com/allauthors/")
             .then( res=> res.json())
             .then(
                 (result) => {
@@ -123,7 +123,7 @@ const Book = (props) => {
                         label="Search"
                         id={props.id}
                         className="search-bar"
-                        placeholder="Search authors by name...(Case insensitive)"
+                        placeholder="Search books by name...(Case insensitive)"
                         value={q}
                         onChange={handleSearchChange}
                         sx={{ position: "sticky" }}
@@ -142,7 +142,7 @@ const Book = (props) => {
                             </Typography>
 
                             <FormControl fullWidth style={{ marginTop: '20px' }}>
-                                <TextField error variant="outlined" label="Name of book" id="book-name" required />
+                                <TextField variant="outlined" label="Name of book" id="book-name" required />
                             </FormControl>
 
 
@@ -179,7 +179,8 @@ const Book = (props) => {
                             </FormControl>
 
                             <FormControl fullWidth>
-                                <div >
+                                <div style={{marginTop:"20px"}}>
+                                    <label htmlFor="publish_date">Date published:</label>
                                     <input type="date" id="publish-date" className="form-control" required/>
                                 </div>   
                             </FormControl>
@@ -228,9 +229,9 @@ const Book = (props) => {
                                     <CardActionArea>
                                         <CardMedia
                                             component="img"
-                                            height="250"
                                             image={item.image_url}
                                             alt="Image not available"
+                                            sx={{ width:"100%", height:"15wv" }}
                                         />
 
                                         <CardContent>
@@ -241,6 +242,9 @@ const Book = (props) => {
                                                 {item.number_of_pages}<br />
                                                 {item.date_of_publishing}<br />
                                                 {item.author_name}<br />
+                                                <Typography component="legend">
+                                                <Rating name="read-only" precision={0.5} value={item.average_critics_rating/2} readOnly></Rating>
+                                                </Typography>
                                             </Typography>
                                         </CardContent>
                                     </CardActionArea>
