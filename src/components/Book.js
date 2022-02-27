@@ -77,7 +77,7 @@ const Book = (props) => {
 
     const exportToCsv = () => {
         setSnack(true)
-        window.location.href = "http://127.0.0.1:8000/exportbooksascsv"
+        window.location.href = "https://tanay-books.herokuapp.com/exportbooksascsv"
 
     }
     const handleSnackClose = (event, reason) => {
@@ -110,7 +110,7 @@ const Book = (props) => {
         obj.image_url = document.querySelector("#image_url").value || "url"
         
         console.log(obj)
-        axios.post("http://127.0.0.1:8000/addnewbook/", obj)
+        axios.post("https://tanay-books.herokuapp.com/addnewbook/", obj)
             .then(function (response) {
                 if(response.data.error==="Invalid input"){
                     setSnackError(true)
@@ -128,7 +128,7 @@ const Book = (props) => {
     }
 
     useEffect(() => {
-        fetch("http://127.0.0.1:8000/books/")
+        fetch("https://tanay-books.herokuapp.com/books/")
             .then(res => res.json())
             .then(
                 (result) => {
@@ -140,7 +140,7 @@ const Book = (props) => {
                     setError(error)
                 }
             )
-            fetch("http://127.0.0.1:8000/allauthors/")
+            fetch("https://tanay-books.herokuapp.com/allauthors/")
             .then( res=> res.json())
             .then(
                 (result) => {
