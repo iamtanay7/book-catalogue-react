@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import TextField from '@mui/material/TextField';
-import { IconButton, Button, Modal, Typography, Box, InputLabel, MenuItem, Select, FormControl, CircularProgress, Card, CardActionArea, CardMedia, CardContent, Rating } from "@mui/material";
+import { IconButton, Button, Modal, Typography, Box, InputLabel, MenuItem, Select, FormControl, CircularProgress, Card, CardActionArea, CardMedia, CardContent, Rating, Slider, Grid } from "@mui/material";
 import Snackbar from "@mui/material/Snackbar";
 import CloseIcon from '@material-ui/icons/Close';
 import axios from 'axios'
@@ -8,6 +8,9 @@ import setCurrentState from '../App'
 
 
 const Book = (props) => {
+    const [filterRating, setFilterRating] = useState(0)
+    const [yop, setYop] = useState(1900)
+    const [nop, setNop] = useState(0)
     const [error, setError] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
     const [items, setItems] = useState([]);
@@ -108,14 +111,14 @@ const Book = (props) => {
         obj.average_critics_rating = parseInt(document.querySelector("#rating").value)
         obj.date_of_publishing = document.querySelector("#publish-date").value
         obj.image_url = document.querySelector("#image_url").value || "url"
-        
+
         console.log(obj)
         axios.post("https://tanay-books.herokuapp.com/addnewbook/", obj)
             .then(function (response) {
-                if(response.data.error==="Invalid input"){
+                if (response.data.error === "Invalid input") {
                     setSnackError(true)
                 }
-                else{
+                else {
                     setSnackAuthor(true)
                     handleClose()
                     window.location.reload()
@@ -140,8 +143,8 @@ const Book = (props) => {
                     setError(error)
                 }
             )
-            fetch("https://tanay-books.herokuapp.com/allauthors/")
-            .then( res=> res.json())
+        fetch("https://tanay-books.herokuapp.com/allauthors/")
+            .then(res => res.json())
             .then(
                 (result) => {
                     setAllAuthors(result)
@@ -151,12 +154,37 @@ const Book = (props) => {
 
 
     }, [])
+    const filterItems = (items) => {
+        if (filterRating !== 0) {
+            items = items.filter((item) => item.average_critics_rating <= filterRating)
+        }
+
+        if (yop !== 1900) {
+            items = items.filter((item) => new Date(item.date_of_publishing).getFullYear() <= yop)
+        }
+        if (nop !== 0) {
+            items = items.filter((item) => item.number_of_pages <= nop)
+        }
+
+        return items.filter((item) => item.name.toLowerCase().includes(q))
+            .sort(
+                function (a, b) {
+                    let x = a.name.toLowerCase();
+                    let y = b.name.toLowerCase();
+                    if (x < y) { return -1; }
+                    if (x > y) { return 1; }
+                    return 0;
+                }
+            )
+    }
+
+
     if (error) {
         return <div>Error: {error.message}</div>;
     }
     else if (!isLoaded) {
         return (
-            <Box sx={{ display: 'flex', marginTop:'300px' }}>
+            <Box sx={{ display: 'flex', marginTop: '300px' }}>
                 <CircularProgress />
             </Box>
         )
@@ -219,17 +247,17 @@ const Book = (props) => {
                                     required
                                     onChange={handleChange}
                                 >
-                                  { allAuthors.map(
-                                        (obj)=><MenuItem key={obj.id} value={obj.id}>{obj.name}</MenuItem>
+                                    {allAuthors.map(
+                                        (obj) => <MenuItem key={obj.id} value={obj.id}>{obj.name}</MenuItem>
                                     )}
                                 </Select>
                             </FormControl>
 
                             <FormControl fullWidth>
-                                <div style={{marginTop:"20px"}}>
+                                <div style={{ marginTop: "20px" }}>
                                     <label htmlFor="publish_date">Date published:</label>
-                                    <input type="date" id="publish-date" className="form-control" required/>
-                                </div>   
+                                    <input type="date" id="publish-date" className="form-control" required />
+                                </div>
                             </FormControl>
 
                             <FormControl fullWidth style={{ marginTop: '20px' }}>
@@ -271,20 +299,51 @@ const Book = (props) => {
                         onClose={handleErrorSnackClose}
                     />
                 </div>
-
+                <div className="container" style={{ marginTop: "20px", width: "50%" }}>
+                    
+                    <label>Critics rating: </label>
+                    <Slider
+                        defaultValue={filterRating}
+                        valueLabelDisplay="auto"
+                        aria-label="default"
+                        min={0}
+                        max={10}
+                        step={1}
+                        onChange={(e) => setFilterRating(e.target.value)}
+                    >
+                        
+                    </Slider>
+                    </div>
+                    <div className="container" style={{ marginTop: "20px", width: "50%" }}>
+                    <label>Year of publishing: </label>
+                    <Slider
+                        defaultValue={yop}
+                        valueLabelDisplay="auto"
+                        aria-label="default"
+                        min={1980}
+                        step={5}
+                        max={2022}
+                        onChange={(e) => setYop(e.target.value)}
+                    ></Slider>
+                    </div>
+                    <div className="container" style={{ marginTop: "20px", width: "50%" }}>
+                    <label>Number of pages: </label>
+                    <Slider
+                        defaultValue={nop}
+                        valueLabelDisplay="auto"
+                        aria-label="default"
+                        step={100}
+                        min={0}
+                        max={1000}
+                        onChange={(e) => setNop(e.target.value)}
+                    ></Slider>
+                    
+                </div>
+                
 
                 <div className="my-element">
                     {
-                        items.filter((item) => item.name.toLowerCase().includes(q))
-                            .sort(
-                                function (a, b) {
-                                    let x = a.name.toLowerCase();
-                                    let y = b.name.toLowerCase();
-                                    if (x < y) { return -1; }
-                                    if (x > y) { return 1; }
-                                    return 0;
-                                }
-                            )
+                        filterItems(items)
                             .map((item, index) => (
                                 <Card key={index}>
                                     <CardActionArea>
@@ -292,7 +351,7 @@ const Book = (props) => {
                                             component="img"
                                             image={item.image_url}
                                             alt="Image not available"
-                                            sx={{ width:"100%", height:"15wv" }}
+                                            sx={{ width: "100%", height: "15wv" }}
                                         />
 
                                         <CardContent>
@@ -304,7 +363,7 @@ const Book = (props) => {
                                                 Published on {item.date_of_publishing}<br />
                                                 Written by {item.author_name}<br />
                                                 <Typography component="legend">
-                                                <Rating name="read-only" precision={0.5} value={item.average_critics_rating/2} readOnly></Rating>
+                                                    <Rating name="read-only" precision={0.5} value={item.average_critics_rating / 2} readOnly></Rating>
                                                 </Typography>
                                             </Typography>
                                         </CardContent>

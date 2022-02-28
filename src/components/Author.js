@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import TextField from '@mui/material/TextField';
-import { IconButton, Skeleton, Button, Modal, Typography, Box, InputLabel, MenuItem, Select, FormControl, CircularProgress, Card, CardActionArea, CardMedia, CardContent } from "@mui/material";
+import { IconButton, Slider, Button, Modal, Typography, Box, InputLabel, MenuItem, Select, FormControl, CircularProgress, Card, CardActionArea, CardMedia, CardContent } from "@mui/material";
 import Snackbar from "@mui/material/Snackbar";
 import CloseIcon from '@material-ui/icons/Close';
 import axios from 'axios'
 
 
 const Author = (props) => {
+    const [filterAge, setFilterAge] = useState(0)
+    const [filterGender, setFilterGender] = useState('');
     const [error, setError] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
     const [items, setItems] = useState([]);
@@ -110,10 +112,10 @@ const Author = (props) => {
         console.log(obj)
         axios.post("https://tanay-books.herokuapp.com/addnewauthor/", obj)
             .then(function (response) {
-              if(response.data.error==="Invalid input"){
+                if (response.data.error === "Invalid input") {
                     setSnackError(true)
                 }
-                else{
+                else {
                     setSnackAuthor(true)
                     handleClose()
                     window.location.reload()
@@ -140,12 +142,34 @@ const Author = (props) => {
             )
 
     }, [])
+
+    const filterItems = (items) => {
+        if (filterAge !== 0) {
+            items = items.filter((item) => item.age <= filterAge)
+        }
+
+        if (filterGender !== '') {
+            items = items.filter((item) => item.gender === filterGender)
+        }
+        return items.filter((item) => item.name.toLowerCase().includes(q))
+            .sort(
+                function (a, b) {
+                    let x = a.name.toLowerCase();
+                    let y = b.name.toLowerCase();
+                    if (x < y) { return -1; }
+                    if (x > y) { return 1; }
+                    return 0;
+                }
+            )
+    }
+
+
     if (error) {
         return <div>Error: {error.message}</div>;
     }
     else if (!isLoaded) {
         return (
-            <Box sx={{ display: 'flex', marginTop:'300px' }}>
+            <Box sx={{ display: 'flex', marginTop: '300px' }}>
                 <CircularProgress />
             </Box>
         )
@@ -250,20 +274,40 @@ const Author = (props) => {
                         onClose={handleErrorSnackClose}
                     />
                 </div>
+                <div className="container" style={{ marginTop: "20px", width: "50%" }}>
 
+                    <label>Age: </label>
+                    <Slider
+                        defaultValue={filterAge}
+                        valueLabelDisplay="auto"
+                        aria-label="default"
+                        min={0}
+                        max={100}
+                        step={10}
+                        onChange={(e) => setFilterAge(e.target.value)}
+                    >
+
+                    </Slider>
+                </div>
+                <div className="container" style={{ marginTop: "20px", width: "50%" }}>
+                    <label>Gender: </label>
+                    <Select
+                        labelId="demo-simple-select-label4"
+                        id="gender"
+                        label="Gender"
+                        value={filterGender}
+                        required
+                        onChange={(e) => setFilterGender(e.target.value)}
+                    >
+                        <MenuItem value="Male">Male</MenuItem>
+                        <MenuItem value="Female">Female</MenuItem>
+                        <MenuItem value="Others">Others </MenuItem>
+                    </Select>
+                </div>
 
                 <div className="my-element">
                     {
-                        items.filter((item) => item.name.toLowerCase().includes(q))
-                            .sort(
-                                function (a, b) {
-                                    let x = a.name.toLowerCase();
-                                    let y = b.name.toLowerCase();
-                                    if (x < y) { return -1; }
-                                    if (x > y) { return 1; }
-                                    return 0;
-                                }
-                            )
+                        filterItems(items)
                             .map((item, index) => (
                                 <Card key={index}>
                                     <CardActionArea>
