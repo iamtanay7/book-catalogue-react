@@ -18,7 +18,7 @@ const App = () => {
             <AppBar>
           <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            The Gene Box
+            Book Catalogue
           </Typography>
               <Typography textAlign="right">
               Currently showing: {currentState?"Books":"Authors"}
